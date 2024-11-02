@@ -183,11 +183,14 @@ export const accessValidator = validate(
             //verify các access_token (so sánh chữ kí)
             try {
               //đúng chữ kí thì sẽ tin vào payload có trong token
-              const decode_authorization = await verifyToken({ token: access_token })
+              const decode_authorization = await verifyToken({
+                token: access_token,
+                privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
+              })
               //decode_authorization chính là payload của access_token
               //decode_authorization chắc chắn có user_id và token_type
               //cất và request sẽ ko thay đổi qua các tầng
-              req.decode_authorization = decode_authorization
+              ;(req as Request).decode_authorization = decode_authorization
             } catch (error) {
               throw new ErrorWithStatus({
                 status: HTTP_STATUS.UNAUTHORIZED, //401
@@ -213,9 +216,13 @@ export const refreshTokenValidator = validate(
         custom: {
           options: async (value, { req }) => {
             try {
-              const decode_refresh_token = await verifyToken({ token: value })
+              const decode_refresh_token = await verifyToken({
+                token: value,
+                privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
+              })
               //value là refresh_token , verify xong là decode_refresh_token là payload
               //lưu vào req để xài ở các tầng khác
+              ;(req as Request).decode_refresh_token = decode_refresh_token
             } catch (error) {
               throw new ErrorWithStatus({
                 status: HTTP_STATUS.UNAUTHORIZED, //401

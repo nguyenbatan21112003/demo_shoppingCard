@@ -8,11 +8,11 @@ dotenv.config()
 // ham chi tao ra token chu k phai tao ra ac hay rf
 export const signToken = ({
   payload,
-  privateKey = process.env.JWT_SECRET as string,
+  privateKey,
   options = { algorithm: 'HS256' }
 }: {
   payload: string | object | Buffer
-  privateKey?: string
+  privateKey: string
   options?: jwt.SignOptions
 }) => {
   return new Promise<string>((resolve, rejects) => {
@@ -24,13 +24,7 @@ export const signToken = ({
 }
 
 //xác thực chữ kí, token có khớp chữ kí không và trả về payload
-export const verifyToken = ({
-  token,
-  privateKey = process.env.JWT_SECRET as string
-}: {
-  token: string
-  privateKey?: string
-}) => {
+export const verifyToken = ({ token, privateKey }: { token: string; privateKey: string }) => {
   return new Promise<TokenPayLoad>((resolve, reject) => {
     jwt.verify(token, privateKey, (error, decode) => {
       if (error) throw reject(error)
